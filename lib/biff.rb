@@ -1,4 +1,5 @@
 require 'net/imap'
+require 'rfc2047'
 require 'version'
 
 Status = Struct.new(:name, :unseen, :all, :cmd)
@@ -91,19 +92,24 @@ class Biff
     @imap.disconnect unless @imap.disconnected?
   end
 
+  NAME_MAX = 15
+  SUBJ_MAX = 40
+
   def unseen_headers
     return unless @unseen
     @imap.fetch(@unseen, 'ENVELOPE').map { |e| e.attr['ENVELOPE'] }.map do |e|
-      name = e.from[0].name
-      nl = name.length > 15 ? 14 : 15
-      subject = e.subject
-      sl = subject.length > 30 ? 29 : 30
+      from = e.from[0]
+      name    = Rfc2047.decode(from.name || from.mailbox)
+      subject = Rfc2047.decode(e.subject)
+      nl = name.length    > NAME_MAX ? NAME_MAX - 1 : NAME_MAX
+      sl = subject.length > SUBJ_MAX ? SUBJ_MAX - 1 : SUBJ_MAX
+
       # rubocop doesn't understand '*' width/precision
       # rubocop:disable Lint/FormatParameterMismatch
       sprintf(
-        '%*.*s%s:%-*.*s%s',
-        nl, nl, name,    nl > 14 ? '' : '…',
-        sl, sl, subject, sl > 29 ? '' : '…',
+        '%*.*s%s: %-*.*s%s',
+        nl, nl, name,    name.length    > NAME_MAX ? '…' : '',
+        sl, sl, subject, subject.length > SUBJ_MAX ? '…' : '',
       )
     end
   end
