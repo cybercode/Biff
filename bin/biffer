@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+require 'biff/cli'
+
+cli = Biff::CLI.new
+
+cli.update
+threads = cli.listen
+
+%w[TERM INT QUIT].each do |sig|
+  Signal.trap(sig) do
+    threads.each(&:exit)
+  end
+end
+
+threads.each(&:join)
