@@ -38,7 +38,7 @@ def report(cli)
     end
     puts '---'
   end
-  puts 'Refresh|refresh=true'
+  puts 'Check Now…|refresh=true'
 
   cli.servers.values.each(&:run)
 end
