@@ -3,7 +3,6 @@ require 'yaml'
 
 class Biff::Options
   ARGS = {
-    verbose: 'Be noisy',
     debug: 'Debug IMAP connection',
     file: ['Config file', 'FILE', '~/.biff.yaml']
   }.freeze
@@ -28,6 +27,11 @@ class Biff::Options
 
       on(o, :help, 'Print help') do
         puts parser
+        exit
+      end
+
+      on(o, :version, "Print version (#{Biff::VERSION})") do
+        puts Biff::VERSION
         exit
       end
     end

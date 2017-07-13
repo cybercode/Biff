@@ -12,9 +12,7 @@ class Biff::CLI
 
     options.config.each do |name, config|
       config['debug'] ||= options.debug
-      config['verbose'] ||= options.verbose
       config['name'] = name
-      $stderr.puts("INFO #{name}") if options.verbose
 
       b = @servers[name] = Biff.new(config)
       b.open
@@ -39,7 +37,9 @@ class Biff::CLI
 
   def update
     count
-    map_servers(&:notify)
+    map_servers do |server|
+      yield server
+    end
     map_servers(&:run)
   end
 

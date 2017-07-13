@@ -3,8 +3,17 @@ require 'biff/cli'
 
 cli = Biff::CLI.new
 
-cli.update
-threads = cli.listen
+def notify(status)
+  puts "#{status.name}:#{status.unseen}/#{status.all}"
+end
+
+cli.update do |server|
+  notify(server.status)
+end
+
+threads = cli.listen do |status|
+  notify(status)
+end
 
 %w[TERM INT QUIT].each do |sig|
   Signal.trap(sig) do

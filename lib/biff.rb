@@ -2,7 +2,7 @@ require 'net/imap'
 require 'rfc2047'
 require 'version'
 
-Status = Struct.new(:name, :unseen, :all, :cmd)
+Status = Struct.new(:name, :unseen, :all)
 
 class Biff
   is_versioned
@@ -43,11 +43,7 @@ class Biff
         idle # wait
 
         count
-        if block_given?
-          yield status
-        else
-          notify
-        end
+        yield status
 
         run
       rescue ThreadError
@@ -73,11 +69,6 @@ class Biff
     [@unseen, @all]
   end
 
-  def notify
-    i = status
-    puts "#{i.name}:#{i.unseen}/#{i.all}"
-  end
-
   def cmd
     @config['cmd']
   end
@@ -97,6 +88,7 @@ class Biff
 
   def unseen_headers
     return unless @unseen
+
     @imap.fetch(@unseen, 'ENVELOPE').map { |e| e.attr['ENVELOPE'] }.map do |e|
       from = e.from[0]
       name    = Rfc2047.decode(from.name || from.mailbox)
@@ -104,7 +96,7 @@ class Biff
       nl = name.length    > NAME_MAX ? NAME_MAX - 1 : NAME_MAX
       sl = subject.length > SUBJ_MAX ? SUBJ_MAX - 1 : SUBJ_MAX
 
-      # rubocop doesn't understand '*' width/precision
+      # rubocop doesn't understand '*.*' width.precision
       # rubocop:disable Lint/FormatParameterMismatch
       sprintf(
         '%*.*s%s: %-*.*s%s',
