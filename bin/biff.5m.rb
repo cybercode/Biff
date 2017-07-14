@@ -3,13 +3,9 @@
 # <bitbar.version>v0.1</bitbar.version>
 # <bitbar.author>Rick Frankel</bitbar.author>
 # <bitbar.author.github>cybercode</bitbar.author.github>
-# <bitbar.desc>
-#    Get Inbox counts (unseen/all) for multiple mailboxes.
-#    Expects ~/.biff.yaml config file
-# </bitbar.desc>
-# <bitbar.image></bitbar.image>
+# <bitbar.desc>Get Inbox counts and unsheed headers for multiple mailboxes. Expects ~/.biff.yaml config file</bitbar.desc>
 # <bitbar.dependencies>ruby, biff rubygem (gem install biff)</bitbar.dependencies>
-# <bitbar.abouturl></bitbar.abouturl>
+# <bitbar.abouturl>https://github.com/cybercode/Biff</bitbar.abouturl>
 
 require 'biff/cli'
 
