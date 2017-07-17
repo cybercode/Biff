@@ -16,11 +16,6 @@ class Biff
       @config['tls'] || true
     )
     Net::IMAP.debug = @config['debug']
-
-    return if @imap.capability.include?('IDLE')
-
-    $stderr.puts "ERR #{config['name']} #{@config['host']} unsupported"
-    exit 1
   end
 
   def open
@@ -36,6 +31,11 @@ class Biff
   end
 
   def listen
+    unless @imap.capability.include?('IDLE')
+      $stderr.puts "ERR #{config['name']} #{@config['host']} unsupported"
+      exit 1
+    end
+
     @idling = true
 
     while @idling
@@ -99,7 +99,7 @@ class Biff
       # rubocop doesn't understand '*.*' width.precision
       # rubocop:disable Lint/FormatParameterMismatch
       sprintf(
-        '%*.*s%s: %-*.*s%s',
+        '%-*.*s%s %-*.*s%s',
         nl, nl, name,    name.length    > NAME_MAX ? '…' : '',
         sl, sl, subject, subject.length > SUBJ_MAX ? '…' : '',
       )

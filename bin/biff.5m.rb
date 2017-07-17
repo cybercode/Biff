@@ -29,7 +29,7 @@ def report(cli)
     puts "#{s.name} #{s.unseen}/#{s.all}#{attrs}"
     if s.unseen.positive?
       cli.servers[s.name].unseen_headers.map do |h|
-        puts h
+        puts "﻿#{h}|font='Menlo Regular' size=12"
       end
     end
     puts '---'
