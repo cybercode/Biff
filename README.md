@@ -14,14 +14,18 @@ The gem provides two command-line scripts, `biffer` (to avoid conflict w/ system
 
 `biff.5m.rb` is a [BitBar](https://getbitbar.com) script, which will run every 5 minutes to update the menubar entry.
 
-Both scripts use (by default) the configuration in ~/.biff.yaml, which should be in the following format, multiple top-level keys (servers) are allowed. Note that one of either `password` or `passcmd` is required.
+Both scripts use (by default) the configuration in ~/.biff.yaml, which should be in the following format, multiple top-level keys (servers) are allowed. Note that one of `password`, `passcmd`, `token` or `tokencmd` is required.
+
+`token` and `tokencmd` are used for gmail oauth2 authentication, and will generate a runtime error if the [gmail_xoauth](https://github.com/nfo/gmail_xoauth) gem is not installed. See the [gmail_xoauth](https://github.com/nfo/gmail_xoauth) homepage for info on how to generate an oauth2 token.
 
 ```yaml
 Name:
-  host: required.host.address
-  user: required_user_name
+  host: required.host.user
+  address: required_user_name
   password: optional_password
   passcmd: shell_command_if_password_not_specified
+  token: gmail_app_oauth2_token
+  tokencmd: shell_command_for_gmail_token
   run: optional_command_to_run_after_inbox_changes
   cmd: optional_email_command_for_bitbar_menu_hot_link
   debug: optional_set_net_imap_debug

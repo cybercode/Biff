@@ -19,10 +19,7 @@ class Biff
   end
 
   def open
-    pass = @config['password'] || `#{@config['passcmd']}`.chomp
-    log('login', @config['user'])
-
-    @imap.login(@config['user'], pass)
+    authenticate || login
     @imap.examine('INBOX')
   end
 
@@ -107,6 +104,30 @@ class Biff
   end
 
   private
+  # gmail oauth
+  def authenticate
+    return false unless @config['token'] || @config['tokencmd']
+
+    begin
+      require 'gmail_xoauth'
+    rescue Error => e
+      log('Is gmail_xoauth installed?')
+      raise e
+    end
+
+    token = @config['token'] || `#{@config['tokencmd']}`.chomp
+
+    @imap.authenticate('XOAUTH2', @config['user'], token)
+  end
+
+  # password login
+  def login
+    pass = @config['password'] || `#{@config['passcmd']}`.chomp
+    log('login', @config['user'])
+
+    @imap.login(@config['user'], pass)
+  end
+
   def log(*args)
     return unless @config['verbose']
     $stderr.puts(['INFO', *args].join(' '))
